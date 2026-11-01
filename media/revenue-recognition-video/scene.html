@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<title>Revenue Recognition — 20s</title>
+<style>
+  @font-face { font-family: "Tajawal"; src: url("fonts/Tajawal-Medium.ttf"); font-weight: 500; }
+  @font-face { font-family: "Tajawal"; src: url("fonts/Tajawal-Bold.ttf"); font-weight: 700; }
+  @font-face { font-family: "Tajawal"; src: url("fonts/Tajawal-ExtraBold.ttf"); font-weight: 800; }
+  @font-face { font-family: "Cairo"; src: url("fonts/Cairo.ttf"); font-weight: 200 1000; }
+
+  :root {
+    --navy-0: #050d1d; --navy-1: #071327; --navy-2: #0b1f3f; --navy-3: #12305e; --navy-4: #1b4382;
+    --gold: #d4af5a; --gold-2: #e9cf8a; --white: #ffffff; --mute: #a9bbd6; --paper: #f7f4ec;
+    --green: #2fbf86; --green-2: #6fe0b0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--navy-0); }
+  body { font-family: "Cairo", "Tajawal", sans-serif; color: var(--white); }
+  #stage { position: absolute; inset: 0; overflow: hidden; background: var(--navy-1); }
+  .abs { position: absolute; }
+  .scene { position: absolute; inset: 0; will-change: transform, opacity, filter; }
+  .h { font-family: "Tajawal"; font-weight: 800; }
+  .gold { color: var(--gold-2); }
+  .green { color: var(--green-2); }
+  .w { display: inline-block; will-change: transform, opacity, filter; }
+  .shadow { text-shadow: 0 6px 30px rgba(0, 0, 0, 0.55); }
+  .center { left: 0; right: 0; text-align: center; }
+
+  #bg { position: absolute; inset: 0;
+    background:
+      radial-gradient(900px 900px at 85% 10%, rgba(212, 175, 90, 0.14), transparent 60%),
+      radial-gradient(1100px 1100px at 10% 90%, rgba(27, 67, 130, 0.55), transparent 65%),
+      linear-gradient(180deg, #081631 0%, #061127 55%, #040b1a 100%); }
+  #grid { position: absolute; inset: -200px;
+    background-image: linear-gradient(rgba(169, 187, 214, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(169, 187, 214, 0.06) 1px, transparent 1px);
+    background-size: 90px 90px; mask-image: radial-gradient(closest-side at 50% 45%, #000 30%, transparent 100%); }
+
+  .pill { display: inline-flex; align-items: center; gap: 12px; padding: 12px 30px; border-radius: 999px;
+    border: 1.5px solid rgba(233, 207, 138, 0.6); color: var(--gold-2); font-family: "Tajawal"; font-weight: 700; font-size: 32px; background: rgba(212, 175, 90, 0.08); }
+  .glass { background: linear-gradient(160deg, rgba(27, 67, 130, 0.45), rgba(11, 31, 63, 0.55));
+    border: 1.5px solid rgba(169, 187, 214, 0.18); border-radius: 30px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08); }
+  .stmt { font-family: "Tajawal"; font-weight: 800; font-size: 64px; line-height: 1.38; }
+  .stmt .l { display: block; }
+  .soft { color: #d6e1f2; }
+
+  /* ---------- Scene 1: desk with contract + invoice ---------- */
+  #office { position: absolute; inset: 0; transform-origin: 470px 1330px; }
+  #monitor { position: absolute; left: 130px; top: 660px; width: 520px; height: 310px; border-radius: 16px; background: #070b14; padding: 11px;
+    box-shadow: 0 0 0 2px #1a2232, 0 40px 120px rgba(0, 0, 0, 0.7), 0 0 140px rgba(70, 130, 255, 0.25); }
+  #screen { position: relative; width: 100%; height: 100%; border-radius: 8px; overflow: hidden;
+    background: linear-gradient(160deg, #10285a 0%, #0a1b3d 60%, #081430 100%); color: #dfe8f7; }
+  #screen .bar { height: 40px; display: flex; align-items: center; padding: 0 16px; font-size: 16px; font-weight: 700;
+    background: rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+  .bars { position: absolute; bottom: 18px; left: 22px; right: 22px; height: 200px; display: flex; align-items: flex-end; gap: 14px; direction: ltr; }
+  .bars i { flex: 1; display: block; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, #3f78d8, #234b92); transform-origin: bottom; }
+  .bars i.g { background: linear-gradient(180deg, var(--gold-2), #a8853b); }
+  #deskPlane { position: absolute; left: 40px; top: 1080px; width: 1000px; height: 860px; transform: perspective(1500px) rotateX(36deg); transform-origin: 50% 0%; }
+  .doc { position: absolute; background: var(--paper); color: #0b1f3f; border-radius: 10px; padding: 34px 36px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55); }
+  .doc h5 { font-family: "Tajawal"; font-weight: 800; font-size: 40px; margin-bottom: 18px; }
+  .doc .ln { height: 12px; border-radius: 6px; background: #d5dae3; margin: 13px 0; }
+  .doc .ln.s { width: 55%; } .doc .ln.m { width: 78%; }
+  .sig { position: absolute; bottom: 34px; left: 36px; width: 170px; height: 60px; }
+  .seal { position: absolute; bottom: 28px; right: 36px; width: 86px; height: 86px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #f1d998, #b88f3e); box-shadow: 0 6px 20px rgba(212, 175, 90, 0.5); }
+  #docInv .amt { margin-top: 26px; background: #0b1f3f; color: var(--gold-2); border-radius: 12px; padding: 14px 20px;
+    font-family: "Tajawal"; font-weight: 800; font-size: 46px; text-align: center; }
+
+  /* ---------- Scene 2: performance obligation ---------- */
+  #card { left: 100px; top: 300px; width: 880px; height: 640px; padding: 44px 50px; }
+  #card .hd { display: flex; align-items: center; gap: 26px; }
+  .ico { width: 100px; height: 100px; border-radius: 50%; flex: none; display: grid; place-items: center;
+    background: radial-gradient(circle at 30% 30%, #f1d998, #b88f3e); box-shadow: 0 10px 40px rgba(212, 175, 90, 0.4); }
+  #card .hd b { font-family: "Tajawal"; font-weight: 800; font-size: 50px; }
+  .crow { display: flex; justify-content: space-between; align-items: center; font-size: 34px; padding: 18px 0; border-bottom: 1.5px solid rgba(169, 187, 214, 0.14); }
+  .crow span { color: var(--mute); font-weight: 600; }
+  .crow b { font-weight: 800; }
+  .crow b.v { font-family: "Tajawal"; font-size: 44px; color: var(--gold-2); }
+  #prog { margin-top: 30px; }
+  #prog .lab { display: flex; justify-content: space-between; font-size: 30px; font-weight: 700; color: var(--mute); margin-bottom: 14px; }
+  #prog .lab b { color: #fff; direction: ltr; }
+  #prog .track { height: 22px; border-radius: 11px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+  #prog .fill { height: 100%; width: 0; border-radius: 11px; background: linear-gradient(270deg, var(--gold-2), var(--gold)); }
+  #done { margin-top: 30px; display: flex; align-items: center; gap: 18px; justify-content: center;
+    padding: 18px 26px; border-radius: 20px; background: rgba(47, 191, 134, 0.14); border: 2px solid rgba(111, 224, 176, 0.55); }
+  #done .ck { width: 64px; height: 64px; border-radius: 50%; background: var(--green); display: grid; place-items: center; box-shadow: 0 0 30px rgba(47, 191, 134, 0.6); }
+  #done b { font-family: "Tajawal"; font-weight: 800; font-size: 40px; color: var(--green-2); }
+  #dateChip { left: 0; right: 0; top: 990px; text-align: center; }
+  #dateChip .pill { font-size: 38px; color: #fff; border-color: rgba(169, 187, 214, 0.35); background: rgba(11, 31, 63, 0.7); }
+
+  /* ---------- Scene 3: calendar ---------- */
+  #calWrap { left: 120px; top: 300px; width: 840px; height: 700px; perspective: 2200px; }
+  #cal { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 50% 0%; }
+  .calCard { position: absolute; inset: 0; border-radius: 30px; overflow: hidden; background: var(--paper); color: #0b1f3f;
+    box-shadow: 0 50px 120px rgba(0, 0, 0, 0.55); backface-visibility: hidden; }
+  .calHead { height: 120px; background: linear-gradient(135deg, #12305e, #0b1f3f); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 44px; }
+  .calHead h4 { font-family: "Tajawal"; font-weight: 800; font-size: 60px; }
+  .calHead .yr { font-size: 34px; color: var(--gold-2); font-weight: 700; }
+  .wk { display: grid; grid-template-columns: repeat(7, 1fr); padding: 14px 24px 0; font-size: 24px; font-weight: 700; color: #6a7891; text-align: center; }
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: 84px; padding: 6px 24px; text-align: center; }
+  .d { position: relative; display: grid; place-items: center; font-size: 34px; font-weight: 700; color: #1d3155; }
+  .d.fri { color: #a0aabb; }
+  .d .hl { position: absolute; width: 74px; height: 74px; border-radius: 50%; left: 50%; top: 50%; margin: -37px 0 0 -37px; }
+  .d .hl.gr { background: radial-gradient(circle at 30% 30%, #7ff0c0, #1f9a6a); box-shadow: 0 8px 30px rgba(47, 191, 134, 0.6); }
+  .d .hl.g { background: radial-gradient(circle at 30% 30%, #f1d998, #b88f3e); box-shadow: 0 8px 30px rgba(212, 175, 90, 0.6); }
+  .d .n { position: relative; }
+  .d.on .n { color: #fff; }
+  .d .badge { position: absolute; top: -6px; left: 8px; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; border: 3px solid var(--paper); }
+  #tl { left: 60px; top: 1050px; width: 960px; height: 200px; }
+  .node { position: absolute; top: 0; width: 420px; text-align: center; }
+  .node .dot { width: 46px; height: 46px; border-radius: 50%; margin: 0 auto 14px; display: grid; place-items: center; }
+  .node .m { font-family: "Tajawal"; font-weight: 800; font-size: 36px; }
+  .node .s { font-family: "Tajawal"; font-weight: 800; font-size: 34px; margin-top: 4px; }
+  #tlLine { position: absolute; top: 22px; height: 3px; left: 210px; right: 210px; background: linear-gradient(90deg, var(--gold), var(--green)); transform-origin: right center; border-radius: 2px; }
+  #gap { position: absolute; top: -26px; left: 0; right: 0; text-align: center; font-size: 26px; font-weight: 700; color: var(--mute); }
+
+  /* ---------- Scene 4: income statement ---------- */
+  #report { left: 130px; top: 290px; width: 820px; height: 720px; border-radius: 30px; background: var(--paper); color: #0b1f3f; overflow: hidden;
+    box-shadow: 0 50px 120px rgba(0, 0, 0, 0.6); transform-origin: 50% 100%; }
+  #report .band { height: 150px; background: linear-gradient(135deg, #12305e, #0b1f3f); border-bottom: 5px solid var(--gold); display: flex; flex-direction: column; justify-content: center; padding: 0 44px; color: #fff; }
+  #report .band b { font-family: "Tajawal"; font-weight: 800; font-size: 52px; }
+  #report .band span { font-size: 28px; color: var(--gold-2); font-weight: 700; }
+  #report .body { padding: 30px 44px; }
+  .rrow { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-radius: 14px; font-size: 34px; font-weight: 800; }
+  .rrow.hl { background: rgba(212, 175, 90, 0.16); box-shadow: inset 0 0 0 2px rgba(212, 175, 90, 0.7); }
+  .rrow .num { font-family: "Tajawal"; font-size: 44px; color: #0b1f3f; }
+  .ph { height: 14px; border-radius: 7px; background: #dfe3ea; margin: 22px 22px; }
+  .ph.s { width: 50%; } .ph.m { width: 72%; }
+  #report .mini { display: flex; align-items: flex-end; gap: 16px; height: 200px; margin: 18px 22px 0; direction: ltr; }
+  #report .mini i { flex: 1; display: block; border-radius: 7px 7px 0 0; background: linear-gradient(180deg, #3f78d8, #12305e); transform-origin: bottom; }
+  #report .mini i.g { background: linear-gradient(180deg, var(--gold-2), #a8853b); }
+  #report .sheen { position: absolute; inset: -40%; background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.5) 50%, transparent 60%); pointer-events: none; }
+
+  #particles, #grain { position: absolute; inset: 0; width: 1080px; height: 1920px; pointer-events: none; }
+  #grain { mix-blend-mode: overlay; opacity: 0.22; }
+  #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 75% 60% at 50% 48%, transparent 55%, rgba(0, 0, 0, 0.6) 100%); }
+  #flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 45%, rgba(255, 244, 214, 0.95), rgba(233, 207, 138, 0.35) 40%, transparent 75%); }
+  #streak { position: absolute; left: -600px; top: 0; width: 520px; height: 1920px; pointer-events: none; opacity: 0;
+    background: linear-gradient(90deg, transparent, rgba(233, 207, 138, 0) 20%, rgba(233, 207, 138, 0.45) 50%, rgba(233, 207, 138, 0) 80%, transparent); filter: blur(30px); }
+  #fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"></div>
+  <div id="grid"></div>
+
+  <!-- ===== SCENE 1 ===== -->
+  <div class="scene" id="s1">
+    <div id="office">
+      <svg class="abs" width="1080" height="1920" viewBox="0 0 1080 1920" style="left:0;top:0">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#040b1c" /><stop offset="0.65" stop-color="#0d2550" /><stop offset="1" stop-color="#173a72" /></linearGradient>
+          <linearGradient id="desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#18263f" /><stop offset="0.3" stop-color="#0c1628" /><stop offset="1" stop-color="#03070f" /></linearGradient>
+          <radialGradient id="lampGlow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ffdf9a" stop-opacity="0.5" /><stop offset="0.5" stop-color="#d4af5a" stop-opacity="0.15" /><stop offset="1" stop-color="#d4af5a" stop-opacity="0" /></radialGradient>
+          <filter id="b8"><feGaussianBlur stdDeviation="8" /></filter>
+          <filter id="b14"><feGaussianBlur stdDeviation="14" /></filter>
+        </defs>
+        <rect width="1080" height="1080" fill="url(#sky)" />
+        <g id="city" filter="url(#b8)"></g>
+        <g id="bokeh" filter="url(#b14)"></g>
+        <g fill="#03070f" opacity="0.92"><rect x="350" y="0" width="16" height="1080" /><rect x="714" y="0" width="16" height="1080" /><rect x="0" y="480" width="1080" height="12" /></g>
+        <path d="M-40 1020 L1120 1020 L1120 1920 L-40 1920 Z" fill="url(#desk)" />
+        <rect x="-40" y="1018" width="1160" height="3" fill="#e9cf8a" opacity="0.25" />
+        <ellipse cx="760" cy="1330" rx="560" ry="300" fill="url(#lampGlow)" />
+        <!-- monitor stand -->
+        <rect x="365" y="960" width="50" height="70" fill="#121a29" />
+        <ellipse cx="390" cy="1030" rx="130" ry="16" fill="#0d1420" />
+        <!-- lamp -->
+        <g>
+          <ellipse cx="960" cy="1050" rx="66" ry="15" fill="#0a0f19" />
+          <rect x="952" y="770" width="14" height="280" fill="#1c2638" />
+          <path d="M959 775 L870 700" stroke="#1c2638" stroke-width="14" stroke-linecap="round" />
+          <path d="M820 700 L930 700 L905 640 L845 640 Z" fill="#1f2a3e" />
+          <ellipse cx="875" cy="702" rx="55" ry="10" fill="#ffe2a6" />
+          <ellipse cx="875" cy="740" rx="160" ry="90" fill="url(#lampGlow)" />
+        </g>
+      </svg>
+      <div id="monitor">
+        <div id="screen">
+          <div class="bar">الإيرادات الشهرية · 2026</div>
+          <div class="bars" id="scrBars"><i style="height:38%"></i><i style="height:52%"></i><i style="height:47%"></i><i style="height:63%"></i><i style="height:58%"></i><i style="height:70%"></i><i class="g" style="height:90%"></i></div>
+        </div>
+      </div>
+      <div id="deskPlane">
+        <div class="doc" id="docCon" style="left:40px;top:40px;width:480px;height:640px;transform:rotate(-7deg)">
+          <h5>عقد تقديم خدمة</h5>
+          <div class="ln m"></div><div class="ln"></div><div class="ln s"></div><div class="ln m"></div><div class="ln"></div><div class="ln s"></div><div class="ln m"></div>
+          <svg class="sig" viewBox="0 0 170 60"><path d="M5 45 C 30 5, 45 60, 70 30 S 110 10, 120 40 S 150 50, 165 20" fill="none" stroke="#12305e" stroke-width="4" stroke-linecap="round" /></svg>
+          <div class="seal"></div>
+        </div>
+        <div class="doc" id="docInv" style="left:470px;top:120px;width:450px;height:560px;transform:rotate(6deg)">
+          <h5>فاتورة</h5>
+          <div class="ln m"></div><div class="ln s"></div><div class="ln"></div><div class="ln s"></div>
+          <div class="amt">10,000 دينار</div>
+        </div>
+        <svg class="abs" style="left:380px;top:640px" width="360" height="60" viewBox="0 0 360 60"><g transform="rotate(-12 180 30)"><rect x="20" y="22" width="300" height="18" rx="9" fill="#1b2232" /><rect x="250" y="22" width="70" height="18" rx="4" fill="#d4af5a" /><path d="M20 22 L0 31 L20 40 Z" fill="#c9ced8" /></g></svg>
+      </div>
+    </div>
+    <div class="abs center" id="t1" style="top:170px">
+      <div id="k1" style="margin-bottom:26px"><span class="pill">المحاسبة في 15 ثانية · الحلقة 2</span></div>
+      <div class="h shadow" style="font-size:88px;line-height:1.3">
+        <div><span class="w">متى</span> <span class="w">نعترف</span> <span class="w gold">بالإيراد</span></div>
+        <div><span class="w">محاسبيًا؟</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCENE 2 ===== -->
+  <div class="scene" id="s2">
+    <div class="abs center" id="k2" style="top:200px"><span class="pill">مثال عملي</span></div>
+    <div class="abs glass" id="card">
+      <div class="hd">
+        <div class="ico"><svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="#0b1f3f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></div>
+        <b>شركة تقدّم خدمة لعميل</b>
+      </div>
+      <div class="crow" style="margin-top:18px"><span>قيمة الخدمة</span><b class="v">10,000 دينار</b></div>
+      <div class="crow"><span>التزام الأداء</span><b>تقديم الخدمة كاملة</b></div>
+      <div id="prog">
+        <div class="lab"><span>إنجاز الخدمة</span><b id="pct">0%</b></div>
+        <div class="track"><div class="fill" id="fill"></div></div>
+      </div>
+      <div id="done">
+        <div class="ck"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+        <b>تم الوفاء بالتزام الأداء</b>
+      </div>
+    </div>
+    <div class="abs" id="dateChip"><span class="pill"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#e9cf8a" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>20 أكتوبر 2026</span></div>
+    <div class="abs center stmt shadow" id="st2" style="top:1140px">
+      <span class="l"><span class="w">تم</span> <span class="w">تقديم</span> <span class="w">الخدمة</span></span>
+      <span class="l"><span class="w">في</span> <span class="w gold">20</span> <span class="w gold">أكتوبر</span></span>
+    </div>
+  </div>
+
+  <!-- ===== SCENE 3 ===== -->
+  <div class="scene" id="s3">
+    <div class="abs center" id="k3" style="top:190px"><span class="pill">لحظة تحقق الإيراد</span></div>
+    <div class="abs" id="calWrap"><div id="cal"><div class="calCard" id="calOct"></div><div class="calCard" id="calNov" style="opacity:0"></div></div></div>
+    <div class="abs" id="tl">
+      <div id="tlLine"></div>
+      <div id="gap">29 يومًا</div>
+      <div class="node" id="nOct" style="right:0">
+        <div class="dot" style="background:var(--green);box-shadow:0 0 26px rgba(47,191,134,.75)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+        <div class="m">20 أكتوبر</div>
+        <div class="s green">تحقق الإيراد: 10,000 دينار</div>
+      </div>
+      <div class="node" id="nNov" style="left:0">
+        <div class="dot" style="background:radial-gradient(circle at 30% 30%,#f1d998,#b88f3e);box-shadow:0 0 26px rgba(212,175,90,.75)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0b1f3f" stroke-width="2.6" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/></svg></div>
+        <div class="m">18 نوفمبر</div>
+        <div class="s gold">استلام النقدية: 10,000 دينار</div>
+      </div>
+    </div>
+    <div class="abs center stmt shadow" id="st3" style="top:1320px;font-size:50px;line-height:1.45">
+      <span class="l"><span class="w">المعيار:</span> <span class="w green">الوفاء</span> <span class="w green">بالتزام</span> <span class="w green">الأداء</span></span>
+      <span class="l soft"><span class="w">لا</span> <span class="w">تاريخ</span> <span class="w">الفاتورة</span> <span class="w">ولا</span> <span class="w">تاريخ</span> <span class="w">التحصيل</span></span>
+    </div>
+  </div>
+
+  <!-- ===== SCENE 4 ===== -->
+  <div class="scene" id="s4">
+    <div class="abs" id="report">
+      <div class="band"><b>قائمة الدخل</b><span>عن شهر أكتوبر 2026</span></div>
+      <div class="body">
+        <div class="rrow hl" id="revRow"><span>إيرادات الخدمات</span><span class="num">10,000 دينار</span></div>
+        <div class="ph m"></div><div class="ph s"></div>
+        <div class="mini" id="repBars"><i style="height:42%"></i><i style="height:55%"></i><i style="height:50%"></i><i style="height:66%"></i><i style="height:61%"></i><i style="height:74%"></i><i class="g" style="height:95%"></i></div>
+      </div>
+      <div class="sheen" id="sheen"></div>
+    </div>
+    <div class="abs center stmt shadow" id="st4" style="top:1080px;font-size:62px">
+      <span class="l"><span class="w">الإيراد</span> <span class="w">يُعترف</span> <span class="w">به</span></span>
+      <span class="l"><span class="w gold">عند</span> <span class="w gold">الوفاء</span> <span class="w gold">بالتزام</span> <span class="w gold">الأداء</span></span>
+    </div>
+    <div class="abs center shadow" id="t4" style="top:1310px">
+      <div style="width:380px;height:3px;margin:0 auto 30px;background:linear-gradient(90deg,transparent,#d4af5a,transparent)" id="rule4"></div>
+      <div class="h" style="font-size:54px;line-height:1.4"><span class="w">افهم</span> <span class="w">المحاسبة..</span></div>
+      <div class="h soft" style="font-size:54px;line-height:1.4"><span class="w">لا</span> <span class="w">تكتفِ</span> <span class="w">بتسجيل</span> <span class="w gold">الأرقام</span></div>
+    </div>
+  </div>
+
+  <canvas id="particles" width="1080" height="1920"></canvas>
+  <div id="streak"></div>
+  <div id="flash"></div>
+  <div id="vignette"></div>
+  <canvas id="grain" width="540" height="960"></canvas>
+  <div id="fade"></div>
+</div>
+
+<script>
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const P = (t, a, b) => cl((t - a) / (b - a));
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const io = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const out3 = (x) => 1 - Math.pow(1 - x, 3);
+  const outExpo = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x));
+  const outBack = (x) => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+  function rng(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+
+  function reveal(el, t, tin, dur = 0.6, dy = 50) {
+    const k = outExpo(P(t, tin, tin + dur));
+    el.style.opacity = k.toFixed(4);
+    el.style.transform = `translateY(${((1 - k) * dy).toFixed(2)}px)`;
+    el.style.filter = k < 0.99 ? `blur(${((1 - k) * 14).toFixed(2)}px)` : 'none';
+  }
+  function words(container, t, tin, step = 0.07, dur = 0.55) {
+    $$('.w', container).forEach((w, i) => {
+      const k = outExpo(P(t, tin + i * step, tin + i * step + dur));
+      w.style.opacity = k.toFixed(4);
+      w.style.transform = `translateY(${((1 - k) * 36).toFixed(2)}px) scale(${(0.94 + 0.06 * k).toFixed(4)})`;
+      w.style.filter = k < 0.99 ? `blur(${((1 - k) * 12).toFixed(2)}px)` : 'none';
+    });
+  }
+  function sceneVis(el, t, a, b, fi = 0.35, fo = 0.35) {
+    const o = Math.min(P(t, a, a + fi), 1 - P(t, b - fo, b));
+    el.style.display = t < a - 0.01 || t > b + 0.01 ? 'none' : 'block';
+    el.style.opacity = cl(o).toFixed(4);
+  }
+
+  (function buildCity() {
+    const r = rng(7), g = $('#city'), bk = $('#bokeh');
+    let x = -20, html = '';
+    while (x < 1100) {
+      const w = 60 + r() * 110, h = 220 + r() * 600, y = 1080 - h;
+      html += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${['#0a1a38', '#0c2044', '#081630'][Math.floor(r() * 3)]}"/>`;
+      for (let yy = y + 20; yy < 1060; yy += 34) for (let xx = x + 10; xx < x + w - 14; xx += 24)
+        if (r() < 0.32) html += `<rect x="${xx}" y="${yy}" width="10" height="14" fill="${r() < 0.7 ? '#e9cf8a' : '#9cc0ff'}" opacity="${(0.35 + r() * 0.6).toFixed(2)}"/>`;
+      x += w + 6 + r() * 16;
+    }
+    g.innerHTML = html;
+    let b = '';
+    for (let i = 0; i < 26; i++) b += `<circle cx="${r() * 1080}" cy="${260 + r() * 780}" r="${10 + r() * 34}" fill="${r() < 0.6 ? '#e9cf8a' : '#7fa8ff'}" opacity="${(0.18 + r() * 0.35).toFixed(2)}"/>`;
+    bk.innerHTML = b;
+  })();
+
+  const CHECK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const CASH = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0b1f3f" stroke-width="3" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/></svg>';
+  function buildMonth(el, name, offset, days, hlDay, cls, badge, badgeBg) {
+    const wk = ['سبت', 'أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة'];
+    let cells = '';
+    for (let i = 0; i < offset; i++) cells += '<div class="d"></div>';
+    for (let d = 1; d <= days; d++) {
+      const col = (offset + d - 1) % 7;
+      const hl = d === hlDay ? `<i class="hl ${cls}"></i>` : '';
+      const bd = d === hlDay ? `<span class="badge" style="background:${badgeBg}">${badge}</span>` : '';
+      cells += `<div class="d${col === 6 ? ' fri' : ''}" data-d="${d}">${hl}<span class="n">${d}</span>${bd}</div>`;
+    }
+    el.innerHTML = `<div class="calHead"><h4>${name}</h4><span class="yr">2026</span></div>
+      <div class="wk">${wk.map((w) => `<div>${w}</div>`).join('')}</div><div class="days">${cells}</div>`;
+  }
+  // Week starts Saturday. 1 Oct 2026 = Thursday (offset 5); 1 Nov 2026 = Sunday (offset 1)
+  buildMonth($('#calOct'), 'أكتوبر', 5, 31, 20, 'gr', CHECK, '#2fbf86');
+  buildMonth($('#calNov'), 'نوفمبر', 1, 30, 18, 'g', CASH, '#e9cf8a');
+
+  const pr = rng(42), parts = Array.from({ length: 46 }, () => ({
+    x: pr() * 1080, y: pr() * 1920, r: 2 + pr() * 7, vy: 8 + pr() * 26, vx: -6 + pr() * 12, a: 0.15 + pr() * 0.5, ph: pr() * 6.28, gold: pr() < 0.75,
+  }));
+  const pctx = $('#particles').getContext('2d');
+  function drawParticles(t) {
+    pctx.clearRect(0, 0, 1080, 1920);
+    for (const p of parts) {
+      const y = (((p.y - p.vy * t) % 1920) + 1920) % 1920, x = p.x + p.vx * t + Math.sin(t * 0.8 + p.ph) * 14;
+      const a = p.a * (0.6 + 0.4 * Math.sin(t * 1.7 + p.ph));
+      const g = pctx.createRadialGradient(x, y, 0, x, y, p.r * 3), c = p.gold ? '233,207,138' : '160,195,255';
+      g.addColorStop(0, `rgba(${c},${a})`); g.addColorStop(1, `rgba(${c},0)`);
+      pctx.fillStyle = g; pctx.beginPath(); pctx.arc(x, y, p.r * 3, 0, 6.283); pctx.fill();
+    }
+  }
+  const gctx = $('#grain').getContext('2d'), gimg = gctx.createImageData(540, 960);
+  function drawGrain(frame) {
+    const r = rng(1000 + frame), d = gimg.data;
+    for (let i = 0; i < d.length; i += 4) { const v = (r() * 255) | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+    gctx.putImageData(gimg, 0, 0);
+  }
+
+  window.renderFrame = function (t, frame = 0) {
+    $('#bg').style.transform = `scale(${1.05 + 0.03 * Math.sin(t * 0.35)}) translate(${Math.sin(t * 0.3) * 12}px, ${Math.cos(t * 0.25) * 10}px)`;
+    $('#grid').style.transform = `translate(${-t * 6}px, ${-t * 10}px)`;
+    $('#grid').style.opacity = (0.25 + 0.75 * P(t, 3.9, 4.6)).toFixed(3);
+
+    // ===== Scene 1 (0 – 4.3) =====
+    const s1 = $('#s1');
+    sceneVis(s1, t, 0, 4.3, 0.5, 0.3);
+    if (t < 4.35) {
+      const push = io(P(t, 0, 3.65)), dive = io(P(t, 3.6, 4.25));
+      const sc = lerp(1.0, 1.12, push) * lerp(1, 3.2, dive);
+      $('#office').style.transform = `translateY(${lerp(40, -20, push)}px) scale(${sc})`;
+      $('#office').style.filter = dive > 0.05 ? `blur(${(dive * 6).toFixed(2)}px)` : 'none';
+      $('#monitor').style.filter = `blur(${(1.5 + push * 1.5).toFixed(2)}px)`; // shallow depth of field: focus on documents
+      $('#city').setAttribute('transform', `translate(${lerp(0, 30, push)} 0)`);
+      $('#bokeh').setAttribute('transform', `translate(${lerp(0, 50, push)} ${lerp(0, -20, push)})`);
+      $$('#scrBars i').forEach((b, i) => (b.style.transform = `scaleY(${out3(P(t, 0.3 + i * 0.1, 1.1 + i * 0.1)).toFixed(3)})`));
+      $('#docCon').style.transform = `rotate(${lerp(-9, -7, push)}deg) translateY(${lerp(30, 0, out3(P(t, 0, 1.4)))}px)`;
+      $('#docInv').style.transform = `rotate(${lerp(9, 6, push)}deg) translateY(${lerp(80, 0, out3(P(t, 0.2, 1.6)))}px)`;
+      reveal($('#k1'), t, 0.3, 0.6, 30);
+      words($('#t1'), t, 0.45, 0.13, 0.6);
+      const to = 1 - io(P(t, 3.45, 3.8));
+      $('#t1').style.opacity = to.toFixed(3);
+      $('#t1').style.transform = `translateY(${(1 - to) * -40}px)`;
+    }
+    $('#flash').style.opacity = (Math.max(0, 1 - Math.abs(t - 4.12) / 0.22) * 0.8).toFixed(3);
+
+    // ===== Scene 2 (4.0 – 10.35) =====
+    const s2 = $('#s2');
+    sceneVis(s2, t, 4.0, 10.35, 0.3, 0.4);
+    if (t > 3.9 && t < 10.4) {
+      const cam = io(P(t, 4.0, 10.3)), out = io(P(t, 9.95, 10.35));
+      s2.style.transform = `translateY(${lerp(20, -20, cam) - out * 140}px) scale(${lerp(1.04, 1.0, cam)})`;
+      s2.style.filter = out > 0.02 ? `blur(${out * 14}px)` : 'none';
+      reveal($('#k2'), t, 4.2, 0.6, 30);
+      reveal($('#card'), t, 4.35, 0.8, 90);
+      $$('#card .crow').forEach((r, i) => reveal(r, t, 4.75 + i * 0.15, 0.5, 20));
+      reveal($('#prog'), t, 5.1, 0.5, 20);
+      const pg = io(P(t, 5.4, 7.0));
+      $('#pct').textContent = Math.round(pg * 100) + '%';
+      const fill = $('#fill');
+      fill.style.width = (pg * 100).toFixed(2) + '%';
+      fill.style.background = pg >= 1 ? 'linear-gradient(270deg, #6fe0b0, #2fbf86)' : 'linear-gradient(270deg, #e9cf8a, #d4af5a)';
+      const kd = P(t, 7.05, 7.45), done = $('#done');
+      done.style.opacity = Math.min(1, kd * 2.5).toFixed(3);
+      done.style.transform = `scale(${lerp(0.8, 1, outBack(kd)).toFixed(3)})`;
+      done.style.boxShadow = `0 0 ${(60 * Math.max(0, 1 - Math.abs(t - 7.45) / 0.5)).toFixed(1)}px rgba(47,191,134,.55)`;
+      reveal($('#dateChip'), t, 7.35, 0.6, 40);
+      words($('#st2'), t, 7.7, 0.1, 0.55);
+    }
+
+    const sk1 = P(t, 9.85, 10.55), sk2 = P(t, 15.85, 16.55);
+    const sk = sk1 > 0 && sk1 < 1 ? sk1 : sk2;
+    $('#streak').style.opacity = sk > 0 && sk < 1 ? Math.sin(sk * Math.PI).toFixed(3) : 0;
+    $('#streak').style.transform = `translateX(${lerp(0, 2300, sk)}px) skewX(-14deg)`;
+
+    // ===== Scene 3 (10.05 – 16.3) =====
+    const s3 = $('#s3');
+    sceneVis(s3, t, 10.05, 16.3, 0.35, 0.35);
+    if (t > 10 && t < 16.35) {
+      const ki = outExpo(P(t, 10.05, 10.75)), out = io(P(t, 15.95, 16.3));
+      s3.style.transform = `translateY(${(1 - ki) * 160 - out * 60}px) scale(${lerp(1.0, 0.97, P(t, 10.1, 16)) * (1 - out * 0.08)})`;
+      s3.style.filter = ki < 0.99 || out > 0.01 ? `blur(${(1 - ki) * 14 + out * 12}px)` : 'none';
+      reveal($('#k3'), t, 10.2, 0.5, 30);
+      const ho = outBack(P(t, 10.85, 11.2));
+      $('#calOct .hl').style.transform = `scale(${ho.toFixed(3)})`;
+      $('#calOct .badge').style.transform = `scale(${outBack(P(t, 11.1, 11.4)).toFixed(3)})`;
+      $('#calOct [data-d="20"]').classList.toggle('on', ho > 0.4);
+      reveal($('#nOct'), t, 11.1, 0.55, 30);
+      const f = P(t, 12.4, 13.0);
+      const ang = f < 0.5 ? io(f * 2) * 90 : -90 + io((f - 0.5) * 2) * 90;
+      $('#cal').style.transform = `rotateX(${f === 0 || f === 1 ? 0 : ang}deg)`;
+      $('#calOct').style.opacity = f < 0.5 ? 1 : 0;
+      $('#calNov').style.opacity = f >= 0.5 ? 1 : 0;
+      const hn = outBack(P(t, 13.05, 13.4));
+      $('#calNov .hl').style.transform = `scale(${hn.toFixed(3)})`;
+      $('#calNov .badge').style.transform = `scale(${outBack(P(t, 13.3, 13.6)).toFixed(3)})`;
+      $('#calNov [data-d="18"]').classList.toggle('on', hn > 0.4);
+      $('#tlLine').style.transform = `scaleX(${io(P(t, 12.5, 13.3)).toFixed(3)})`;
+      reveal($('#nNov'), t, 13.3, 0.55, 30);
+      reveal($('#gap'), t, 13.6, 0.5, 15);
+      words($('#st3'), t, 14.0, 0.07, 0.5);
+    }
+
+    // ===== Scene 4 (16.0 – 20) =====
+    const s4 = $('#s4');
+    sceneVis(s4, t, 16.0, 20.5, 0.3, 0.3);
+    if (t > 15.95) {
+      const k = outExpo(P(t, 16.0, 16.9));
+      s4.style.transform = `scale(${lerp(1.07, 1.0, io(P(t, 16.0, 20.0)))})`;
+      const rep = $('#report');
+      rep.style.opacity = k.toFixed(3);
+      rep.style.transform = `perspective(1800px) translateY(${(1 - k) * 200}px) rotateX(${(1 - k) * 22 + Math.sin(t * 1.1) * 1}deg) rotateY(${Math.sin(t * 0.8) * 2}deg)`;
+      rep.style.filter = k < 0.99 ? `blur(${(1 - k) * 10}px)` : 'none';
+      $$('#repBars i').forEach((b, i) => (b.style.transform = `scaleY(${out3(P(t, 16.4 + i * 0.07, 17.1 + i * 0.07)).toFixed(3)})`));
+      const pulse = Math.max(0, 1 - Math.abs(t - 17.0) / 0.45);
+      $('#revRow').style.boxShadow = `inset 0 0 0 2px rgba(212,175,90,.75), 0 0 ${(40 * pulse).toFixed(1)}px rgba(212,175,90,${(0.6 * pulse).toFixed(2)})`;
+      $('#sheen').style.transform = `translateX(${lerp(-900, 900, P(t, 16.8, 18.0))}px)`;
+      words($('#st4'), t, 16.6, 0.09, 0.55);
+      $('#rule4').style.transform = `scaleX(${io(P(t, 17.9, 18.5)).toFixed(3)})`;
+      words($('#t4'), t, 18.1, 0.1, 0.55);
+    }
+    $('#fade').style.opacity = (P(t, 19.7, 20.0) * 0.35).toFixed(3);
+
+    drawParticles(t);
+    drawGrain(frame);
+  };
+
+  const q = new URLSearchParams(location.search);
+  window.__ready = document.fonts.ready.then(() => { window.renderFrame(parseFloat(q.get('t') || '0')); return true; });
+</script>
+</body>
+</html>
