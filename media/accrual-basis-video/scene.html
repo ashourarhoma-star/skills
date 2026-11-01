@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<title>Accrual Basis — 15s</title>
+<style>
+  @font-face { font-family: "Tajawal"; src: url("fonts/Tajawal-Medium.ttf"); font-weight: 500; }
+  @font-face { font-family: "Tajawal"; src: url("fonts/Tajawal-Bold.ttf"); font-weight: 700; }
+  @font-face { font-family: "Tajawal"; src: url("fonts/Tajawal-ExtraBold.ttf"); font-weight: 800; }
+  @font-face { font-family: "Cairo"; src: url("fonts/Cairo.ttf"); font-weight: 200 1000; }
+
+  :root {
+    --navy-0: #050d1d;
+    --navy-1: #071327;
+    --navy-2: #0b1f3f;
+    --navy-3: #12305e;
+    --navy-4: #1b4382;
+    --gold: #d4af5a;
+    --gold-2: #e9cf8a;
+    --white: #ffffff;
+    --mute: #a9bbd6;
+    --paper: #f7f4ec;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--navy-0); }
+  body { font-family: "Cairo", "Tajawal", sans-serif; color: var(--white); }
+  #stage { position: absolute; inset: 0; overflow: hidden; background: var(--navy-1); }
+  .abs { position: absolute; }
+  .scene { position: absolute; inset: 0; will-change: transform, opacity, filter; }
+  .h { font-family: "Tajawal"; font-weight: 800; letter-spacing: 0; }
+  .gold { color: var(--gold-2); }
+  .w { display: inline-block; will-change: transform, opacity, filter; }
+  .shadow { text-shadow: 0 6px 30px rgba(0, 0, 0, 0.55); }
+  .center { left: 0; right: 0; text-align: center; }
+
+  /* ---------- Background ---------- */
+  #bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(900px 900px at 85% 10%, rgba(212, 175, 90, 0.14), transparent 60%),
+      radial-gradient(1100px 1100px at 10% 90%, rgba(27, 67, 130, 0.55), transparent 65%),
+      linear-gradient(180deg, #081631 0%, #061127 55%, #040b1a 100%);
+  }
+  #grid {
+    position: absolute; inset: -200px;
+    background-image:
+      linear-gradient(rgba(169, 187, 214, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(169, 187, 214, 0.06) 1px, transparent 1px);
+    background-size: 90px 90px;
+    mask-image: radial-gradient(closest-side at 50% 45%, #000 30%, transparent 100%);
+  }
+
+  /* ---------- Scene 1 : office ---------- */
+  #office { position: absolute; inset: 0; transform-origin: 540px 868px; }
+  #monitor {
+    position: absolute; left: 165px; top: 640px; width: 750px; height: 456px;
+    border-radius: 20px; background: #070b14; padding: 14px;
+    box-shadow: 0 0 0 2px #1a2232, 0 40px 120px rgba(0, 0, 0, 0.7), 0 0 160px rgba(70, 130, 255, 0.28);
+  }
+  #screen {
+    position: relative; width: 100%; height: 100%; border-radius: 9px; overflow: hidden;
+    background: linear-gradient(160deg, #10285a 0%, #0a1b3d 60%, #081430 100%);
+    font-family: "Cairo"; color: #dfe8f7;
+  }
+  #screen .bar { height: 46px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+    background: rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 19px; font-weight: 700; }
+  #screen .dots { display: flex; gap: 7px; direction: ltr; }
+  #screen .dots i { width: 10px; height: 10px; border-radius: 50%; background: #2d3d5e; display: block; }
+  .kpis { display: flex; gap: 12px; padding: 14px 18px 0; }
+  .kpi { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 10px; padding: 8px 12px; }
+  .kpi b { display: block; font-size: 22px; font-weight: 800; color: #fff; direction: ltr; text-align: right; }
+  .kpi span { font-size: 13px; color: var(--mute); }
+  .panes { display: flex; gap: 14px; padding: 14px 18px; height: 300px; }
+  .pane { flex: 1; background: rgba(255, 255, 255, 0.04); border-radius: 10px; padding: 12px; position: relative; }
+  .pane h6 { font-size: 14px; color: var(--mute); font-weight: 600; margin-bottom: 8px; }
+  .bars { position: absolute; bottom: 14px; left: 14px; right: 14px; height: 190px; display: flex; align-items: flex-end; gap: 12px; direction: ltr; }
+  .bars i { flex: 1; display: block; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, #3f78d8, #234b92); transform-origin: bottom; }
+  .bars i.g { background: linear-gradient(180deg, var(--gold-2), #a8853b); }
+  .row { display: flex; justify-content: space-between; font-size: 15px; padding: 9px 10px; border-radius: 7px; margin-bottom: 6px; background: rgba(255, 255, 255, 0.035); }
+  .row b { direction: ltr; font-weight: 700; }
+  .row.hl { background: rgba(212, 175, 90, 0.2); box-shadow: inset 0 0 0 1.5px rgba(233, 207, 138, 0.8); color: #fff; }
+
+  /* ---------- Scene 2 ---------- */
+  .glass {
+    background: linear-gradient(160deg, rgba(27, 67, 130, 0.45), rgba(11, 31, 63, 0.55));
+    border: 1.5px solid rgba(169, 187, 214, 0.18); border-radius: 30px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 12px; padding: 12px 30px; border-radius: 999px;
+    border: 1.5px solid rgba(233, 207, 138, 0.6); color: var(--gold-2); font-family: "Tajawal"; font-weight: 700; font-size: 32px;
+    background: rgba(212, 175, 90, 0.08);
+  }
+  #svc { left: 110px; top: 300px; width: 860px; height: 170px; display: flex; align-items: center; gap: 30px; padding: 0 36px; }
+  .ico { width: 104px; height: 104px; border-radius: 50%; flex: none; display: grid; place-items: center;
+    background: radial-gradient(circle at 30% 30%, #f1d998, #b88f3e); box-shadow: 0 10px 40px rgba(212, 175, 90, 0.4); }
+  #svc .t1 { font-family: "Tajawal"; font-weight: 800; font-size: 50px; line-height: 1.1; }
+  #svc .t2 { font-size: 31px; color: var(--mute); font-weight: 600; margin-top: 6px; }
+
+  #invoice {
+    left: 150px; top: 510px; width: 780px; height: 560px; border-radius: 26px; background: var(--paper); color: #0b1f3f;
+    padding: 40px 50px; box-shadow: 0 50px 120px rgba(0, 0, 0, 0.55); transform-origin: 50% 0%;
+  }
+  #invoice .top { display: flex; justify-content: flex-start; align-items: center; gap: 22px; }
+  #invoice .top h3 { font-family: "Tajawal"; font-weight: 800; font-size: 60px; }
+  #invoice .no { font-size: 26px; color: #6a7891; font-weight: 700; direction: ltr; }
+  #invoice .rule { height: 4px; background: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold) 80%, transparent); margin: 18px 0 22px; border-radius: 2px; }
+  .irow { display: flex; justify-content: space-between; font-size: 30px; padding: 10px 0; border-bottom: 1.5px dashed rgba(11, 31, 63, 0.14); }
+  .irow span { color: #5d6b83; font-weight: 600; }
+  .irow b { font-weight: 800; }
+  .total { margin-top: 26px; display: flex; justify-content: space-between; align-items: center; background: #0b1f3f; color: #fff; border-radius: 18px; padding: 18px 30px; }
+  .total > span { font-size: 32px; font-weight: 700; color: var(--mute); }
+  .total b { font-family: "Tajawal"; font-weight: 800; font-size: 66px; color: var(--gold-2); }
+  #stamp {
+    left: 46px; top: 34px; padding: 8px 22px; border: 5px solid #b5842d; color: #b5842d; border-radius: 14px;
+    font-family: "Tajawal"; font-weight: 800; font-size: 34px; background: rgba(247, 244, 236, 0.85); white-space: nowrap;
+  }
+  #defer { left: 0; right: 0; top: 1102px; text-align: center; }
+  #defer .pill { font-size: 34px; color: #fff; border-color: rgba(169, 187, 214, 0.35); background: rgba(11, 31, 63, 0.7); }
+  .stmt { font-family: "Tajawal"; font-weight: 800; font-size: 62px; line-height: 1.38; }
+  .stmt .l { display: block; }
+  .stmt .soft { color: #d6e1f2; }
+
+  /* ---------- Scene 3 : calendar ---------- */
+  #calWrap { left: 120px; top: 330px; width: 840px; height: 700px; perspective: 2200px; }
+  #cal { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 50% 0%; }
+  .calCard { position: absolute; inset: 0; border-radius: 30px; overflow: hidden; background: var(--paper); color: #0b1f3f;
+    box-shadow: 0 50px 120px rgba(0, 0, 0, 0.55); backface-visibility: hidden; }
+  .calHead { height: 120px; background: linear-gradient(135deg, #12305e, #0b1f3f); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 44px; }
+  .calHead h4 { font-family: "Tajawal"; font-weight: 800; font-size: 60px; }
+  .calHead .yr { font-size: 34px; color: var(--gold-2); font-weight: 700; }
+  .rings { position: absolute; top: -16px; left: 0; right: 0; display: flex; justify-content: space-around; padding: 0 160px; }
+  .rings i { width: 22px; height: 46px; border-radius: 11px; background: linear-gradient(#c9ced8, #7a8496); display: block; box-shadow: 0 4px 8px rgba(0,0,0,.4); }
+  .wk { display: grid; grid-template-columns: repeat(7, 1fr); padding: 14px 24px 0; font-size: 24px; font-weight: 700; color: #6a7891; text-align: center; }
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: 84px; padding: 6px 24px; text-align: center; }
+  .d { position: relative; display: grid; place-items: center; font-size: 34px; font-weight: 700; color: #1d3155; }
+  .d.fri { color: #a0aabb; }
+  .d .hl { position: absolute; width: 74px; height: 74px; border-radius: 50%; left: 50%; top: 50%; margin: -37px 0 0 -37px; }
+  .d .hl.g { background: radial-gradient(circle at 30% 30%, #f1d998, #b88f3e); box-shadow: 0 8px 30px rgba(212, 175, 90, 0.6); }
+  .d .hl.b { background: radial-gradient(circle at 30% 30%, #3f78d8, #12305e); box-shadow: 0 8px 30px rgba(27, 67, 130, 0.6); }
+  .d .n { position: relative; }
+  .d.on .n { color: #fff; }
+
+  #tl { left: 90px; top: 1065px; width: 900px; height: 170px; }
+  .node { position: absolute; top: 0; width: 400px; text-align: center; }
+  .node .dot { width: 34px; height: 34px; border-radius: 50%; margin: 0 auto 14px; }
+  .node .m { font-family: "Tajawal"; font-weight: 800; font-size: 36px; }
+  .node .s { font-size: 27px; color: var(--mute); font-weight: 600; margin-top: 2px; }
+  #tlLine { position: absolute; top: 16px; height: 3px; left: 200px; right: 200px; background: linear-gradient(90deg, #fff, var(--gold)); transform-origin: right center; border-radius: 2px; }
+
+  /* ---------- Scene 4 : reports ---------- */
+  .rep { position: absolute; width: 440px; height: 580px; left: 320px; top: 370px; border-radius: 28px; background: var(--paper); color: #0b1f3f;
+    box-shadow: 0 50px 120px rgba(0, 0, 0, 0.6); overflow: hidden; transform-origin: 50% 110%; }
+  .rep .band { height: 120px; background: linear-gradient(135deg, #12305e, #0b1f3f); display: flex; align-items: center; padding: 0 30px; border-bottom: 5px solid var(--gold); }
+  .rep .band b { font-family: "Tajawal"; font-weight: 800; font-size: 38px; color: #fff; line-height: 1.15; }
+  .rep .body { padding: 26px 30px; }
+  .rep .ln { height: 14px; border-radius: 7px; background: #dfe3ea; margin: 14px 0; }
+  .rep .ln.s { width: 60%; } .rep .ln.m { width: 80%; }
+  .rep .ln.gd { background: linear-gradient(90deg, var(--gold), var(--gold-2)); width: 45%; }
+  .rep .mini { display: flex; align-items: flex-end; gap: 12px; height: 150px; margin-top: 24px; direction: ltr; }
+  .rep .mini i { flex: 1; display: block; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #3f78d8, #12305e); }
+  .rep .mini i.g { background: linear-gradient(180deg, var(--gold-2), #a8853b); }
+  .rep .sheen { position: absolute; inset: -40%; background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.55) 50%, transparent 60%); }
+
+  /* ---------- Overlays ---------- */
+  #particles, #grain { position: absolute; inset: 0; width: 1080px; height: 1920px; pointer-events: none; }
+  #grain { mix-blend-mode: overlay; opacity: 0.22; }
+  #vignette { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 75% 60% at 50% 48%, transparent 55%, rgba(0, 0, 0, 0.6) 100%); }
+  #flash { position: absolute; inset: 0; pointer-events: none; opacity: 0;
+    background: radial-gradient(circle at 50% 45%, rgba(255, 244, 214, 0.95), rgba(233, 207, 138, 0.35) 40%, transparent 75%); }
+  #streak { position: absolute; left: -600px; top: 0; width: 520px; height: 1920px; pointer-events: none; opacity: 0;
+    background: linear-gradient(90deg, transparent, rgba(233, 207, 138, 0.0) 20%, rgba(233, 207, 138, 0.45) 50%, rgba(233, 207, 138, 0) 80%, transparent);
+    filter: blur(30px); transform: skewX(-14deg); }
+  #fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"></div>
+  <div id="grid"></div>
+
+  <!-- ================= SCENE 1 ================= -->
+  <div class="scene" id="s1">
+    <div id="office">
+      <svg class="abs" width="1080" height="1920" viewBox="0 0 1080 1920" style="left:0;top:0">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#040b1c" />
+            <stop offset="0.65" stop-color="#0d2550" />
+            <stop offset="1" stop-color="#173a72" />
+          </linearGradient>
+          <linearGradient id="desk" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#16233b" />
+            <stop offset="0.25" stop-color="#0c1628" />
+            <stop offset="1" stop-color="#03070f" />
+          </linearGradient>
+          <radialGradient id="lampGlow" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stop-color="#ffdf9a" stop-opacity="0.55" />
+            <stop offset="0.5" stop-color="#d4af5a" stop-opacity="0.16" />
+            <stop offset="1" stop-color="#d4af5a" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id="rim" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#e9cf8a" stop-opacity="0" />
+            <stop offset="0.75" stop-color="#e9cf8a" stop-opacity="0.15" />
+            <stop offset="1" stop-color="#ffe7b0" stop-opacity="0.85" />
+          </linearGradient>
+          <filter id="b8"><feGaussianBlur stdDeviation="8" /></filter>
+          <filter id="b3"><feGaussianBlur stdDeviation="3" /></filter>
+          <filter id="b14"><feGaussianBlur stdDeviation="14" /></filter>
+        </defs>
+        <!-- window / city -->
+        <rect width="1080" height="1240" fill="url(#sky)" />
+        <g id="city" filter="url(#b8)"></g>
+        <g id="bokeh" filter="url(#b14)"></g>
+        <!-- window mullions -->
+        <g fill="#03070f" opacity="0.92">
+          <rect x="350" y="0" width="16" height="1240" />
+          <rect x="714" y="0" width="16" height="1240" />
+          <rect x="0" y="520" width="1080" height="12" />
+        </g>
+        <!-- desk -->
+        <path d="M-40 1180 L1120 1180 L1120 1920 L-40 1920 Z" fill="url(#desk)" />
+        <rect x="-40" y="1178" width="1160" height="3" fill="#e9cf8a" opacity="0.25" />
+        <!-- lamp glow on desk -->
+        <ellipse cx="900" cy="1230" rx="420" ry="150" fill="url(#lampGlow)" />
+        <!-- papers -->
+        <g transform="translate(70 1250) rotate(-8)">
+          <rect width="300" height="200" rx="8" fill="#e8e4da" opacity="0.92" />
+          <rect x="24" y="26" width="140" height="14" rx="7" fill="#9aa5b8" />
+          <rect x="24" y="62" width="250" height="9" rx="4" fill="#c4cbd6" />
+          <rect x="24" y="84" width="220" height="9" rx="4" fill="#c4cbd6" />
+          <rect x="24" y="106" width="240" height="9" rx="4" fill="#c4cbd6" />
+          <rect x="160" y="150" width="114" height="22" rx="6" fill="#d4af5a" opacity="0.8" />
+        </g>
+        <g transform="translate(150 1290) rotate(5)">
+          <rect width="300" height="200" rx="8" fill="#f4f1ea" />
+          <rect x="24" y="26" width="120" height="14" rx="7" fill="#12305e" />
+          <rect x="24" y="62" width="250" height="9" rx="4" fill="#c4cbd6" />
+          <rect x="24" y="84" width="210" height="9" rx="4" fill="#c4cbd6" />
+          <rect x="24" y="106" width="232" height="9" rx="4" fill="#c4cbd6" />
+          <rect x="150" y="150" width="124" height="22" rx="6" fill="#0b1f3f" />
+        </g>
+        <!-- lamp -->
+        <g>
+          <ellipse cx="960" cy="1215" rx="70" ry="16" fill="#0a0f19" />
+          <rect x="952" y="930" width="14" height="285" fill="#1c2638" />
+          <path d="M959 935 L870 860" stroke="#1c2638" stroke-width="14" stroke-linecap="round" />
+          <path d="M820 860 L930 860 L905 800 L845 800 Z" fill="#1f2a3e" />
+          <ellipse cx="875" cy="862" rx="55" ry="10" fill="#ffe2a6" />
+          <ellipse cx="875" cy="900" rx="160" ry="90" fill="url(#lampGlow)" />
+        </g>
+        <!-- cup -->
+        <g transform="translate(760 1230)">
+          <path d="M0 0 L70 0 L62 80 L8 80 Z" fill="#e8e4da" />
+          <path d="M70 18 Q100 22 92 48 Q86 62 66 60" fill="none" stroke="#e8e4da" stroke-width="9" />
+          <ellipse cx="35" cy="0" rx="35" ry="8" fill="#5a3b22" />
+        </g>
+        <!-- monitor stand -->
+        <rect x="510" y="1090" width="60" height="100" fill="#121a29" />
+        <ellipse cx="540" cy="1192" rx="150" ry="20" fill="#0d1420" />
+        <!-- keyboard -->
+        <path d="M330 1290 L750 1290 L780 1350 L300 1350 Z" fill="#141d2e" />
+        <path d="M330 1290 L750 1290" stroke="#2a3854" stroke-width="2" />
+      </svg>
+
+      <div id="monitor">
+        <div id="screen">
+          <div class="bar"><span>التقارير المالية · أكتوبر 2026</span><div class="dots"><i></i><i></i><i></i></div></div>
+          <div class="kpis">
+            <div class="kpi"><span>الإيرادات</span><b>48,250</b></div>
+            <div class="kpi"><span>الذمم المدينة</span><b>10,000</b></div>
+            <div class="kpi"><span>المصروفات</span><b>31,400</b></div>
+          </div>
+          <div class="panes">
+            <div class="pane">
+              <h6>الفواتير الصادرة</h6>
+              <div class="row"><span>فاتورة 1021</span><b>3,200</b></div>
+              <div class="row"><span>فاتورة 1022</span><b>5,750</b></div>
+              <div class="row"><span>فاتورة 1023</span><b>2,100</b></div>
+              <div class="row hl" id="hlRow"><span>فاتورة 1024</span><b>10,000</b></div>
+            </div>
+            <div class="pane">
+              <h6>الإيرادات الشهرية</h6>
+              <div class="bars" id="scrBars"><i style="height:40%"></i><i style="height:55%"></i><i style="height:48%"></i><i style="height:68%"></i><i style="height:62%"></i><i class="g" style="height:88%"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- foreground accountant (over-the-shoulder) -->
+      <svg class="abs" id="fg" width="1080" height="1920" viewBox="0 0 1080 1920" style="left:0;top:0">
+        <g id="person">
+          <!-- shoulders / jacket -->
+          <path d="M-160 1920 L-160 1700 Q-120 1560 60 1520 Q170 1495 230 1470 L430 1470 Q490 1495 600 1520 Q770 1560 820 1700 L840 1920 Z" fill="#02060d" />
+          <!-- collar -->
+          <path d="M250 1470 L330 1600 L410 1470 Z" fill="#0b1426" />
+          <!-- neck -->
+          <rect x="270" y="1380" width="120" height="110" rx="40" fill="#03070f" />
+          <!-- head -->
+          <ellipse cx="330" cy="1290" rx="132" ry="160" fill="#03070f" />
+          <!-- hair -->
+          <path d="M198 1270 Q200 1130 330 1125 Q462 1130 464 1270 Q440 1190 330 1185 Q220 1190 198 1270 Z" fill="#010307" />
+          <!-- rim light -->
+          <path d="M440 1170 Q470 1230 462 1300 Q456 1370 420 1420" fill="none" stroke="url(#rim)" stroke-width="7" filter="url(#b3)" />
+          <path d="M600 1522 Q760 1560 815 1690" fill="none" stroke="#e9cf8a" stroke-opacity="0.45" stroke-width="6" filter="url(#b3)" />
+        </g>
+      </svg>
+    </div>
+
+    <!-- title -->
+    <div class="abs center" id="t1" style="top:205px">
+      <div id="k1" style="margin-bottom:26px"><span class="pill">مبادئ محاسبية</span></div>
+      <div class="h shadow" style="font-size:86px;line-height:1.3">
+        <div><span class="w">هل</span> <span class="w">تعرف</span> <span class="w">متى</span></div>
+        <div><span class="w">يُعترف</span> <span class="w gold">بالإيراد</span> <span class="w">محاسبيًا؟</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SCENE 2 ================= -->
+  <div class="scene" id="s2">
+    <div class="abs center" id="k2" style="top:200px"><span class="pill">مثال عملي</span></div>
+    <div class="abs glass" id="svc">
+      <div class="ico">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#0b1f3f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M8.5 13.5l2.3 2.3 4.7-4.7"/></svg>
+      </div>
+      <div>
+        <div class="t1">تقديم خدمة لشركة</div>
+        <div class="t2">تمّ تنفيذ الخدمة خلال شهر أكتوبر</div>
+      </div>
+    </div>
+
+    <div class="abs" id="invoice">
+      <div class="top"><h3>فاتورة</h3><div class="no">INV-1024</div></div>
+      <div class="rule"></div>
+      <div class="irow"><span>تاريخ الفاتورة</span><b>20 أكتوبر 2026</b></div>
+      <div class="irow"><span>الخدمة</span><b>خدمات استشارية</b></div>
+      <div class="irow"><span>موعد التحصيل</span><b>نوفمبر 2026</b></div>
+      <div class="total"><span>الإجمالي</span><b><span id="amt">10,000</span> دينار</b></div>
+      <div class="abs" id="stamp">لم تُحصَّل بعد</div>
+    </div>
+
+    <div class="abs" id="defer">
+      <span class="pill">
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#e9cf8a" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        استلام المبلغ مؤجَّل إلى نوفمبر
+      </span>
+    </div>
+
+    <div class="abs center stmt shadow" id="st2" style="top:1235px">
+      <span class="l"><span class="w">مبدأ</span> <span class="w gold">الاستحقاق</span> <span class="w">يعني</span></span>
+      <span class="l"><span class="w">تسجيل</span> <span class="w">الإيراد</span> <span class="w gold">عند</span> <span class="w gold">تحققه،</span></span>
+      <span class="l soft"><span class="w">وليس</span> <span class="w">عند</span> <span class="w">استلام</span> <span class="w">النقدية</span></span>
+    </div>
+  </div>
+
+  <!-- ================= SCENE 3 ================= -->
+  <div class="scene" id="s3">
+    <div class="abs center" id="k3" style="top:200px"><span class="pill">متى يُسجَّل الإيراد؟</span></div>
+    <div class="abs" id="calWrap">
+      <div id="cal">
+        <div class="calCard" id="calOct"></div>
+        <div class="calCard" id="calNov" style="opacity:0"></div>
+      </div>
+    </div>
+    <div class="abs" id="tl">
+      <div id="tlLine"></div>
+      <div class="node" id="nOct" style="right:0">
+        <div class="dot" style="background:radial-gradient(circle at 30% 30%, #f1d998, #b88f3e);box-shadow:0 0 24px rgba(212,175,90,.7)"></div>
+        <div class="m gold">أكتوبر: يُسجَّل الإيراد</div>
+        <div class="s">10,000 دينار — عند تقديم الخدمة</div>
+      </div>
+      <div class="node" id="nNov" style="left:0">
+        <div class="dot" style="background:#fff;box-shadow:0 0 24px rgba(255,255,255,.6)"></div>
+        <div class="m">نوفمبر: تحصيل النقدية</div>
+        <div class="s">تسوية الذمم المدينة — لا إيراد جديد</div>
+      </div>
+    </div>
+    <div class="abs center stmt shadow" id="st3" style="top:1300px;font-size:58px">
+      <span class="l"><span class="w">العبرة</span> <span class="w">بتاريخ</span> <span class="w gold">تحقق</span> <span class="w gold">الإيراد</span></span>
+      <span class="l"><span class="w">أو</span> <span class="w gold">نشوء</span> <span class="w gold">المصروف،</span></span>
+      <span class="l soft"><span class="w">وليس</span> <span class="w">بتاريخ</span> <span class="w">الدفع</span> <span class="w">أو</span> <span class="w">القبض</span></span>
+    </div>
+  </div>
+
+  <!-- ================= SCENE 4 ================= -->
+  <div class="scene" id="s4">
+    <div id="reps">
+      <div class="rep" id="r1"><div class="band" style="justify-content:flex-end;text-align:left"><b>قائمة المركز<br />المالي</b></div><div class="body"><div class="ln m"></div><div class="ln"></div><div class="ln s"></div><div class="ln m"></div><div class="ln gd"></div><div class="ln"></div><div class="ln s"></div></div><div class="sheen"></div></div>
+      <div class="rep" id="r3"><div class="band"><b>قائمة التدفقات<br />النقدية</b></div><div class="body"><div class="ln"></div><div class="ln s"></div><div class="mini"><i style="height:45%"></i><i style="height:70%"></i><i style="height:58%"></i><i class="g" style="height:90%"></i></div></div><div class="sheen"></div></div>
+      <div class="rep" id="r2"><div class="band"><b>قائمة الدخل</b></div><div class="body"><div class="ln m"></div><div class="ln s"></div><div class="mini"><i style="height:40%"></i><i style="height:52%"></i><i style="height:66%"></i><i style="height:74%"></i><i class="g" style="height:95%"></i></div><div class="ln gd" style="margin-top:22px"></div></div><div class="sheen"></div></div>
+    </div>
+    <div class="abs center shadow" id="t4" style="top:1110px">
+      <div class="h" style="font-size:66px;line-height:1.3"><span class="w">مبدأ</span> <span class="w">الاستحقاق...</span></div>
+      <div class="h gold" style="font-size:76px;line-height:1.35"><span class="w">أساس</span> <span class="w">القوائم</span> <span class="w">المالية</span> <span class="w">الدقيقة</span></div>
+      <div id="goldRule" style="margin:34px auto 0;width:420px;height:4px;border-radius:2px;background:linear-gradient(90deg,transparent,#d4af5a,transparent)"></div>
+    </div>
+  </div>
+
+  <canvas id="particles" width="1080" height="1920"></canvas>
+  <div id="streak"></div>
+  <div id="flash"></div>
+  <div id="vignette"></div>
+  <canvas id="grain" width="540" height="960"></canvas>
+  <div id="fade"></div>
+</div>
+
+<script>
+  // ---------- helpers ----------
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const P = (t, a, b) => cl((t - a) / (b - a));
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const io = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const out3 = (x) => 1 - Math.pow(1 - x, 3);
+  const outExpo = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x));
+  const outBack = (x) => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+  function rng(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+
+  /** in/out reveal: translateY + blur + opacity */
+  function reveal(el, t, tin, dur = 0.6, dy = 50, tout = null, odur = 0.35, extra = '') {
+    let k = outExpo(P(t, tin, tin + dur));
+    let o = k;
+    let y = (1 - k) * dy, b = (1 - k) * 14;
+    if (tout !== null) {
+      const ko = io(P(t, tout, tout + odur));
+      o *= 1 - ko; y -= ko * dy * 0.6; b += ko * 10;
+    }
+    el.style.opacity = o.toFixed(4);
+    el.style.transform = `translateY(${y.toFixed(2)}px) ${extra}`;
+    el.style.filter = b > 0.05 ? `blur(${b.toFixed(2)}px)` : 'none';
+  }
+  function words(container, t, tin, step = 0.07, dur = 0.55) {
+    $$('.w', container).forEach((w, i) => {
+      const k = outExpo(P(t, tin + i * step, tin + i * step + dur));
+      w.style.opacity = k.toFixed(4);
+      w.style.transform = `translateY(${((1 - k) * 36).toFixed(2)}px) scale(${(0.94 + 0.06 * k).toFixed(4)})`;
+      w.style.filter = k < 0.99 ? `blur(${((1 - k) * 12).toFixed(2)}px)` : 'none';
+    });
+  }
+  function sceneVis(el, t, a, b, fi = 0.35, fo = 0.35) {
+    const o = Math.min(P(t, a, a + fi), 1 - P(t, b - fo, b));
+    el.style.display = t < a - 0.01 || t > b + 0.01 ? 'none' : 'block';
+    el.style.opacity = cl(o).toFixed(4);
+  }
+
+  // ---------- build static content ----------
+  (function buildCity() {
+    const r = rng(7), g = $('#city'), bk = $('#bokeh');
+    let x = -20, html = '';
+    while (x < 1100) {
+      const w = 60 + r() * 110, h = 260 + r() * 640, y = 1240 - h;
+      const shade = ['#0a1a38', '#0c2044', '#081630'][Math.floor(r() * 3)];
+      html += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${shade}"/>`;
+      for (let yy = y + 20; yy < 1220; yy += 34) for (let xx = x + 10; xx < x + w - 14; xx += 24)
+        if (r() < 0.32) html += `<rect x="${xx}" y="${yy}" width="10" height="14" fill="${r() < 0.7 ? '#e9cf8a' : '#9cc0ff'}" opacity="${(0.35 + r() * 0.6).toFixed(2)}"/>`;
+      x += w + 6 + r() * 16;
+    }
+    g.innerHTML = html;
+    let b = '';
+    for (let i = 0; i < 26; i++) b += `<circle cx="${r() * 1080}" cy="${300 + r() * 900}" r="${10 + r() * 34}" fill="${r() < 0.6 ? '#e9cf8a' : '#7fa8ff'}" opacity="${(0.18 + r() * 0.35).toFixed(2)}"/>`;
+    bk.innerHTML = b;
+  })();
+
+  function buildMonth(el, name, offset, days, hlDay, cls) {
+    const wk = ['سبت', 'أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة'];
+    let cells = '';
+    for (let i = 0; i < offset; i++) cells += '<div class="d"></div>';
+    for (let d = 1; d <= days; d++) {
+      const col = (offset + d - 1) % 7;
+      cells += `<div class="d${col === 6 ? ' fri' : ''}" data-d="${d}">${d === hlDay ? `<i class="hl ${cls}"></i>` : ''}<span class="n">${d}</span></div>`;
+    }
+    el.innerHTML = `<div class="calHead"><h4>${name}</h4><span class="yr">2026</span></div>
+      <div class="wk">${wk.map((w) => `<div>${w}</div>`).join('')}</div><div class="days">${cells}</div>`;
+  }
+  // Week starts Saturday. 1 Oct 2026 = Thursday (offset 5); 1 Nov 2026 = Sunday (offset 1)
+  buildMonth($('#calOct'), 'أكتوبر', 5, 31, 20, 'g');
+  buildMonth($('#calNov'), 'نوفمبر', 1, 30, 18, 'b');
+
+  // particles
+  const pr = rng(42), parts = Array.from({ length: 46 }, () => ({
+    x: pr() * 1080, y: pr() * 1920, r: 2 + pr() * 7, vy: 8 + pr() * 26, vx: -6 + pr() * 12, a: 0.15 + pr() * 0.5, ph: pr() * 6.28, gold: pr() < 0.75,
+  }));
+  const pctx = $('#particles').getContext('2d');
+  function drawParticles(t) {
+    pctx.clearRect(0, 0, 1080, 1920);
+    for (const p of parts) {
+      const y = ((p.y - p.vy * t) % 1920 + 1920) % 1920, x = p.x + p.vx * t + Math.sin(t * 0.8 + p.ph) * 14;
+      const a = p.a * (0.6 + 0.4 * Math.sin(t * 1.7 + p.ph));
+      const g = pctx.createRadialGradient(x, y, 0, x, y, p.r * 3);
+      const c = p.gold ? '233,207,138' : '160,195,255';
+      g.addColorStop(0, `rgba(${c},${a})`); g.addColorStop(1, `rgba(${c},0)`);
+      pctx.fillStyle = g; pctx.beginPath(); pctx.arc(x, y, p.r * 3, 0, 6.283); pctx.fill();
+    }
+  }
+  const gctx = $('#grain').getContext('2d'), gimg = gctx.createImageData(540, 960);
+  function drawGrain(frame) {
+    const r = rng(1000 + frame), d = gimg.data;
+    for (let i = 0; i < d.length; i += 4) { const v = (r() * 255) | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+    gctx.putImageData(gimg, 0, 0);
+  }
+
+  // ---------- timeline ----------
+  window.renderFrame = function (t, frame = 0) {
+    // background drift
+    $('#bg').style.transform = `scale(${1.05 + 0.03 * Math.sin(t * 0.35)}) translate(${Math.sin(t * 0.3) * 12}px, ${Math.cos(t * 0.25) * 10}px)`;
+    $('#grid').style.transform = `translate(${-t * 6}px, ${-t * 10}px)`;
+    $('#grid').style.opacity = (0.25 + 0.75 * P(t, 3.9, 4.6)).toFixed(3);
+
+    // ===== Scene 1 (0 – 4.25) =====
+    const s1 = $('#s1');
+    sceneVis(s1, t, 0, 4.3, 0.5, 0.3);
+    if (t < 4.35) {
+      const push = io(P(t, 0, 3.65));
+      const dive = io(P(t, 3.6, 4.25));
+      const sc = lerp(1.0, 1.1, push) * lerp(1, 3.4, dive);
+      const ty = lerp(30, 0, push);
+      $('#office').style.transform = `translateY(${ty}px) scale(${sc})`;
+      $('#office').style.filter = dive > 0.05 ? `blur(${(dive * 6).toFixed(2)}px)` : 'none';
+      $('#fg').style.transform = `translate(${lerp(0, -70, push) - dive * 400}px, ${lerp(0, 30, push) + dive * 400}px)`;
+      $('#fg').style.filter = `blur(${(3 + dive * 10).toFixed(2)}px)`;
+      $('#city').setAttribute('transform', `translate(${lerp(0, 30, push)} 0)`);
+      $('#bokeh').setAttribute('transform', `translate(${lerp(0, 50, push)} ${lerp(0, -20, push)})`);
+      // screen: bars grow + highlight pulse
+      $$('#scrBars i').forEach((b, i) => (b.style.transform = `scaleY(${out3(P(t, 0.4 + i * 0.12, 1.2 + i * 0.12)).toFixed(3)})`));
+      const pulse = P(t, 2.2, 2.6);
+      $('#hlRow').style.boxShadow = `inset 0 0 0 1.5px rgba(233,207,138,${(0.25 + 0.75 * pulse).toFixed(2)}), 0 0 ${30 * pulse}px rgba(212,175,90,${0.6 * pulse})`;
+      // title
+      reveal($('#k1'), t, 0.35, 0.6, 30, 3.45, 0.3);
+      words($('#t1'), t, 0.55, 0.11, 0.6);
+      const to = 1 - io(P(t, 3.45, 3.8));
+      $('#t1').style.opacity = to.toFixed(3);
+      $('#t1').style.transform = `translateY(${(1 - to) * -40}px)`;
+    }
+
+    // flash on dive
+    const fl = Math.max(0, 1 - Math.abs(t - 4.12) / 0.22);
+    $('#flash').style.opacity = (fl * 0.85).toFixed(3);
+
+    // ===== Scene 2 (4.0 – 9.7) =====
+    const s2 = $('#s2');
+    sceneVis(s2, t, 4.0, 9.75, 0.3, 0.4);
+    if (t > 3.9 && t < 9.8) {
+      const cam = io(P(t, 4.0, 9.7));
+      const out = io(P(t, 9.35, 9.75));
+      s2.style.transform = `translateY(${lerp(20, -20, cam) - out * 140}px) scale(${lerp(1.04, 1.0, cam)})`;
+      s2.style.filter = out > 0.02 ? `blur(${out * 14}px)` : 'none';
+      reveal($('#k2'), t, 4.2, 0.6, 30);
+      reveal($('#svc'), t, 4.3, 0.7, 70);
+      // invoice: 3D tilt settle
+      const ki = outExpo(P(t, 4.75, 5.6));
+      const inv = $('#invoice');
+      inv.style.opacity = ki.toFixed(3);
+      inv.style.transform = `perspective(1800px) translateY(${(1 - ki) * 160}px) rotateX(${(1 - ki) * 28 + Math.sin(t * 1.2) * 1.2}deg) rotateY(${Math.sin(t * 0.9) * 2.2}deg)`;
+      inv.style.filter = ki < 0.99 ? `blur(${(1 - ki) * 10}px)` : 'none';
+      $$('.irow', inv).forEach((r, i) => reveal(r, t, 5.05 + i * 0.12, 0.5, 20));
+      reveal($('.total', inv), t, 5.4, 0.5, 20);
+      const n = Math.round(10000 * out3(P(t, 5.4, 6.2)) / 50) * 50;
+      $('#amt').textContent = n.toLocaleString('en-US');
+      // stamp thump
+      const ks = P(t, 6.25, 6.55), st = $('#stamp');
+      st.style.opacity = (ks > 0 ? Math.min(1, ks * 3) : 0).toFixed(3);
+      st.style.transform = `rotate(-9deg) scale(${lerp(1.9, 1, outBack(ks)).toFixed(3)})`;
+      reveal($('#defer'), t, 6.55, 0.6, 40);
+      words($('#st2'), t, 6.75, 0.085, 0.55);
+    }
+
+    // streak wipes
+    const sk1 = P(t, 9.25, 9.95), sk2 = P(t, 12.85, 13.55);
+    const sk = sk1 > 0 && sk1 < 1 ? sk1 : sk2;
+    $('#streak').style.opacity = sk > 0 && sk < 1 ? Math.sin(sk * Math.PI).toFixed(3) : 0;
+    $('#streak').style.transform = `translateX(${lerp(0, 2300, sk)}px) skewX(-14deg)`;
+
+    // ===== Scene 3 (9.45 – 13.3) =====
+    const s3 = $('#s3');
+    sceneVis(s3, t, 9.45, 13.3, 0.35, 0.35);
+    if (t > 9.4 && t < 13.35) {
+      const ki = outExpo(P(t, 9.45, 10.15));
+      const out = io(P(t, 12.95, 13.3));
+      s3.style.transform = `translateY(${(1 - ki) * 160 - out * 60}px) scale(${lerp(1.0, 0.97, P(t, 9.5, 13)) * (1 - out * 0.08)})`;
+      s3.style.filter = ki < 0.99 || out > 0.01 ? `blur(${(1 - ki) * 14 + out * 12}px)` : 'none';
+      reveal($('#k3'), t, 9.6, 0.5, 30);
+      // October highlight
+      const ho = outBack(P(t, 9.95, 10.3));
+      const oh = $('#calOct .hl');
+      oh.style.transform = `scale(${ho.toFixed(3)})`;
+      $('#calOct [data-d="20"]').classList.toggle('on', ho > 0.4);
+      // page flip Oct -> Nov (10.55 – 11.15)
+      const f = P(t, 10.55, 11.15), cal = $('#cal');
+      const ang = f < 0.5 ? io(f * 2) * 90 : -90 + io((f - 0.5) * 2) * 90;
+      cal.style.transform = `rotateX(${f === 0 || f === 1 ? 0 : ang}deg)`;
+      $('#calOct').style.opacity = f < 0.5 ? 1 : 0;
+      $('#calNov').style.opacity = f >= 0.5 ? 1 : 0;
+      const hn = outBack(P(t, 11.15, 11.5));
+      $('#calNov .hl').style.transform = `scale(${hn.toFixed(3)})`;
+      $('#calNov [data-d="18"]').classList.toggle('on', hn > 0.4);
+      // timeline
+      reveal($('#nOct'), t, 10.15, 0.55, 30);
+      $('#tlLine').style.transform = `scaleX(${io(P(t, 10.7, 11.3)).toFixed(3)})`;
+      reveal($('#nNov'), t, 11.2, 0.55, 30);
+      words($('#st3'), t, 11.45, 0.06, 0.5);
+    }
+
+    // ===== Scene 4 (13.0 – 15) =====
+    const s4 = $('#s4');
+    sceneVis(s4, t, 13.0, 15.5, 0.3, 0.3);
+    if (t > 12.95) {
+      const k = outExpo(P(t, 13.0, 13.9));
+      const drift = P(t, 13.0, 15.0);
+      s4.style.transform = `scale(${lerp(1.08, 1.0, io(drift))})`;
+      const cfg = [['#r1', -11, -235, 50], ['#r3', 11, 235, 50], ['#r2', 0, 0, 0]];
+      cfg.forEach(([id, rot, dx, dy], i) => {
+        const e = $(id), kk = outExpo(P(t, 13.0 + i * 0.08, 13.9 + i * 0.08));
+        e.style.opacity = kk.toFixed(3);
+        e.style.transform = `translate(${dx * kk}px, ${dy * kk + (1 - kk) * 220}px) rotate(${rot * kk}deg) scale(${lerp(0.85, i === 2 ? 1.04 : 0.92, kk)})`;
+        e.style.filter = kk < 0.99 ? `blur(${(1 - kk) * 10}px)` : 'none';
+        const sh = P(t, 13.7 + i * 0.12, 14.6 + i * 0.12);
+        e.querySelector('.sheen').style.transform = `translateX(${lerp(-700, 700, sh)}px)`;
+      });
+      words($('#t4'), t, 13.35, 0.09, 0.55);
+      $('#goldRule').style.transform = `scaleX(${io(P(t, 13.9, 14.5)).toFixed(3)})`;
+    }
+    $('#fade').style.opacity = (P(t, 14.75, 15.0) * 0.35).toFixed(3);
+
+    drawParticles(t);
+    drawGrain(frame);
+  };
+
+  const q = new URLSearchParams(location.search);
+  window.__ready = document.fonts.ready.then(() => { window.renderFrame(parseFloat(q.get('t') || '0')); return true; });
+</script>
+</body>
+</html>
