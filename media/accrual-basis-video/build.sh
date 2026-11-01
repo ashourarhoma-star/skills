@@ -44,7 +44,7 @@ fi
 
 # ---------- 5. Encode ----------
 ffmpeg -v error -y -framerate 30 -i "$WORK/frames/f%04d.jpg" -i "$WORK/mix.wav" \
-  -c:v libx264 -preset slow -crf 18 -profile:v high -level 5.1 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+  -c:v libx264 -preset slow -crf 22 -profile:v high -level 5.1 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
   -c:a aac -b:a 256k -movflags +faststart -shortest "$OUT/accrual-basis-4k.mp4"
 ffmpeg -v error -y -i "$OUT/accrual-basis-4k.mp4" -vf "scale=1080:1920:flags=lanczos" \
   -c:v libx264 -preset slow -crf 19 -profile:v high -pix_fmt yuv420p -c:a copy -movflags +faststart "$OUT/accrual-basis-1080p.mp4"
